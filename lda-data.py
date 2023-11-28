@@ -10,13 +10,24 @@ from nltk.stem.porter import *
 import numpy as np
 import random
 import pickle
+import nltk
+
+nltk.download('wordnet')
+
 # Load documents
 
 newsgroups_train = fetch_20newsgroups(subset='train')
+
+# Load test data
+newsgroups_test = fetch_20newsgroups(subset='test')
+
 print(len(newsgroups_train.data), " documents loaded.")
+print(len(newsgroups_test.data), " documents loaded.")
 
 print("Example document:")
 print(newsgroups_train.data[0])
+
+
 
 
 # Preprocess documents - lemmatization and stemming
@@ -33,6 +44,7 @@ def preprocess(text):
     return result
 
 processed_docs = list(map(preprocess, newsgroups_train.data))
+processed_docs_test = list(map(preprocess, newsgroups_test.data))
 
 print("Example document - lemmatized and stemmed:")
 print(processed_docs[0])
@@ -52,6 +64,12 @@ maxdoclen = 0
 for doc in processed_docs:
     docs.append(list(filter(lambda x: x != -1, dictionary.doc2idx(doc))))
     maxdoclen = max(maxdoclen, len(docs[-1]))
+
+docs_test = list()
+maxdoclen_test = 0
+for doc in processed_docs_test:
+    docs_test.append(list(filter(lambda x: x != -1, dictionary.doc2idx(doc))))
+    maxdoclen_test = max(maxdoclen_test, len(docs_test[-1]))
 
 print("Example document - filtered:")
 print(docs[0])
@@ -77,4 +95,11 @@ with open('preprocessed_docs.pkl', 'wb') as f:
 # Save dictionary
 with open('dictionary.pkl', 'wb') as f:
     pickle.dump(dictionary, f)
+
+# Save test documents
+with open('preprocessed_docs_test.pkl', 'wb') as f:
+    pickle.dump(docs_test, f)
+
+
+
 
